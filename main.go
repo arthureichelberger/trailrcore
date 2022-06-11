@@ -8,11 +8,15 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/rs/zerolog/log"
 
 	"github.com/arthureichelberger/trailrcore/pkg/env"
 	"github.com/arthureichelberger/trailrcore/pkg/http"
 	"github.com/arthureichelberger/trailrcore/pkg/pgsql"
+	"github.com/arthureichelberger/trailrcore/user/service"
+	"github.com/arthureichelberger/trailrcore/user/store"
+	"github.com/arthureichelberger/trailrcore/user/transport"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/sync/errgroup"
 )
@@ -51,6 +55,9 @@ func main() {
 			ctx.JSON(stdHttp.StatusOK, gin.H{"ping": "pong"})
 		})
 
+		mainGrp := g.Group("/trailrcore")
+		initRouters(ctx, mainGrp, db)
+
 		return http.Serve(
 			ctx,
 			fmt.Sprintf("%s:%s", env.Get("TRAILRCORE_HTTP_HOST", "0.0.0.0"), env.Get("TRAILRCORE_HTTP_PORT", "8080")),
@@ -61,4 +68,12 @@ func main() {
 	if err := errgrp.Wait(); err != nil {
 		log.Panic().Err(err).Msg("service shutdown")
 	}
+}
+
+func initRouters(_ context.Context, engine *gin.RouterGroup, db *sqlx.DB) {
+	userStore := store.NewPgStore(db)
+	signInService := service.NewSignInService(userStore)
+
+	userRouter := transport.NewUserRouter(signInService)
+	userRouter.InitRouter(engine)
 }

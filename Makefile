@@ -51,4 +51,11 @@ tern:
 
 migrate: ## Run migrations
 migrate:
-	@tern migrate --config dist/migrations/tern.conf --migrations dist/migrations
+	tern migrate --config dist/migrations/tern.conf --migrations dist/migrations
+
+dbreset: ## Reset the database
+dbreset:
+	docker compose rm -sfv db
+	docker volume rm -f trailrcore_dbdata
+	docker compose up -d
+	sleep 2
