@@ -1,4 +1,5 @@
 .DEFAULT_GOAL := help
+.PHONY: dist
 GRC=$(shell which grc)
 
 -include make.properties
@@ -13,4 +14,16 @@ start:
 
 build: ## Compile the app into a binary for macOS
 build:
-	go build -o dist/bin/trailrcore main.go
+	go build -o dist/bin/local/trailrcore main.go
+
+unit: ## Run unit tests
+unit:
+	ENVIRONMENT=test $(GRC) go test -v -p=1 -count=1 -race -tags=unit ./... -timeout 2m
+
+dist: ## Compile the app into a binary for Linux
+dist:
+	@CGO_ENABLED=0 GOOS=linux go build -o dist/bin/trailrcore main.go
+
+deploy: ## Deploy the application through a docker image
+deploy: dist
+	./deploy.sh ghcr.io/arthureichelberger/trailrcore -f ./dist/Dockerfile ./dist
