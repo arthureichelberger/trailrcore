@@ -17,7 +17,6 @@ img="$1"
 shift
 
 brc="$(echo "$GITHUB_REF" | sed -n 's#refs/heads/##p')"
-brc="develop"
 tag="$(echo "$GITHUB_REF" | sed -n 's#refs/tags/##p')"
 
 if [ -n "$tag" ]; then
