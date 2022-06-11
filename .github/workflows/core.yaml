@@ -36,6 +36,9 @@ jobs:
     env:
       CGO_ENABLED: 1
     steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.17
       - uses: actions/checkout@v2
       - run: make integration
     services:
@@ -74,6 +77,9 @@ jobs:
     env:
       CGO_ENABLED: 1
     steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.17
       - uses: actions/checkout@v2
       - run: make coverage
       - uses: actions/github-script@v6
