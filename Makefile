@@ -25,6 +25,10 @@ integration: ## Run integration tests
 integration:
 	ENVIRONMENT=test $(GRC) go test -v -p=1 -count=1 -race -tags=integration ./... -timeout 2m
 
+test: ## Run complete test suite
+test:
+	ENVIRONMENT=test $(GRC) go test -v -p=1 -count=1 -race -tags=unit,integration ./... -timeout 2m
+
 dist: ## Compile the app into a binary for Linux
 dist:
 	@CGO_ENABLED=0 GOOS=linux go build -o dist/bin/trailrcore main.go
@@ -36,3 +40,7 @@ deploy: dist
 docker: ## Compile the app and build it into a docker image locally
 docker: dist
 	docker build -t "${IMG}:local" -f ./dist/Dockerfile ./dist
+
+coverage: ## Compute the code coverage
+coverage:
+	./coverage.sh

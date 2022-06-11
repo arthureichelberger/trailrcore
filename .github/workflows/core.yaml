@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version: 1.17
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
   unit:
@@ -55,7 +55,7 @@ jobs:
   dist:
     name: Build docker image and publish it
     runs-on: ubuntu-latest
-    needs: [lint, unit]
+    needs: [lint, unit, integration]
     env:
       COMMIT: ${{ github.sha }}
       VERSION: ${{ github.ref }}
@@ -67,3 +67,35 @@ jobs:
           password: ${{ secrets.GHCR_TOKEN }}
       - uses: actions/checkout@v2
       - run: make deploy
+  coverage:
+    name: Code coverage
+    runs-on: ubuntu-latest
+    needs: [lint, unit, integration]
+    env:
+      CGO_ENABLED: 1
+    steps:
+      - uses: actions/checkout@v2
+      - run: make coverage
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "## 🤖 Test coverage:\n\n**Coverage:** ${{ env.TOTAL_COVERAGE }}%\n"
+            })
+    services:
+      postgres:
+        image: postgres:13
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: trailrcore
+          POSTGRES_DB: trailrcore
+          POSTGRES_PASSWORD: trailrcore
+        options: >-
+          --health-cmd "pg_isready"
+          --health-interval 5s
+          --health-timeout 1m
+          --health-retries 10
