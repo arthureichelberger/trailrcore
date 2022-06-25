@@ -15,14 +15,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestItShouldBeAbleToBuildTheSignInService(t *testing.T) {
-	s := service.NewSignInService(store.NewFakeStore())
-	assert.IsType(t, s, service.SignInService{})
+func TestItShouldBeAbleToBuildTheSignupService(t *testing.T) {
+	s := service.NewSignupService(store.NewFakeStore())
+	assert.IsType(t, s, service.SignupService{})
 }
 
 func TestItShouldNotBeAbleToCreateAUserWithAnInvalidEmail(t *testing.T) {
 	fs := store.NewFakeStore()
-	s := service.NewSignInService(fs)
+	s := service.NewSignupService(fs)
 
 	user, err := s.CreateUser(context.Background(), "", "", "")
 	assert.Empty(t, user)
@@ -32,7 +32,7 @@ func TestItShouldNotBeAbleToCreateAUserWithAnInvalidEmail(t *testing.T) {
 
 func TestItShouldNotBeAbleToCreateAUserWithAnEmptyPassword(t *testing.T) {
 	fs := store.NewFakeStore()
-	s := service.NewSignInService(fs)
+	s := service.NewSignupService(fs)
 
 	user, err := s.CreateUser(context.Background(), "test@gmail.com", "", "")
 	assert.Empty(t, user)
@@ -42,7 +42,7 @@ func TestItShouldNotBeAbleToCreateAUserWithAnEmptyPassword(t *testing.T) {
 
 func TestItShouldNotBeAbleToCreateAUserWithAnInvalidPassword(t *testing.T) {
 	fs := store.NewFakeStore()
-	s := service.NewSignInService(fs)
+	s := service.NewSignupService(fs)
 
 	user, err := s.CreateUser(context.Background(), "test@gmail.com", "a", "")
 	assert.Empty(t, user)
@@ -55,7 +55,7 @@ func TestItShouldFailGracefullyIfItIsNotPossibleToInsertUserInDatabase(t *testin
 	fs.CreateUserHandler = func(ctx context.Context, user model.User) error {
 		return fmt.Errorf("an error occurred")
 	}
-	s := service.NewSignInService(fs)
+	s := service.NewSignupService(fs)
 
 	user, err := s.CreateUser(context.Background(), "test@gmail.com", "a", "a")
 	assert.Empty(t, user)
@@ -64,7 +64,7 @@ func TestItShouldFailGracefullyIfItIsNotPossibleToInsertUserInDatabase(t *testin
 
 func TestItShouldBeAbleToCreateAUser(t *testing.T) {
 	fs := store.NewFakeStore()
-	s := service.NewSignInService(fs)
+	s := service.NewSignupService(fs)
 
 	user, err := s.CreateUser(context.Background(), "test@gmail.com", "a", "a")
 	assert.NotEmpty(t, user)

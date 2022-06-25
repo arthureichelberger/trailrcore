@@ -21,7 +21,7 @@ import (
 )
 
 func TestItShouldNotBeAbleToCreateUserWithoutPayload(t *testing.T) {
-	cuh := handler.CreateUserHandler(service.SignInService{})
+	cuh := handler.CreateUserHandler(service.SignupService{})
 	r := gin.New()
 	r.POST("/", cuh)
 	req, _ := http.NewRequest("POST", "/", nil)
@@ -32,7 +32,7 @@ func TestItShouldNotBeAbleToCreateUserWithoutPayload(t *testing.T) {
 }
 
 func TestItShouldNotBeAbleToCreateUserWithWrongPayload(t *testing.T) {
-	cuh := handler.CreateUserHandler(service.SignInService{})
+	cuh := handler.CreateUserHandler(service.SignupService{})
 	r := gin.New()
 	r.POST("/", cuh)
 	payloads := []map[string]string{
@@ -57,7 +57,7 @@ func TestItShouldNotBeAbleToCreateAUserIfAnInternalServerErrorOccurs(t *testing.
 	fs.CreateUserHandler = func(ctx context.Context, user model.User) error {
 		return fmt.Errorf("error")
 	}
-	sis := service.NewSignInService(fs)
+	sis := service.NewSignupService(fs)
 	cuh := handler.CreateUserHandler(sis)
 	r := gin.New()
 	r.POST("/", cuh)
@@ -73,7 +73,7 @@ func TestItShouldNotBeAbleToCreateAUserIfAnInternalServerErrorOccurs(t *testing.
 
 func TestItShouldBeAbleToCreateAUser(t *testing.T) {
 	fs := store.NewFakeStore()
-	sis := service.NewSignInService(fs)
+	sis := service.NewSignupService(fs)
 	cuh := handler.CreateUserHandler(sis)
 	r := gin.New()
 	r.POST("/", cuh)
