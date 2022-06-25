@@ -20,3 +20,14 @@ func New(claims CustomClaims) (string, error) {
 
 	return token, nil
 }
+
+func Decode(jwtToken string) (CustomClaims, error) {
+	var claims CustomClaims
+	if _, err := jwt.ParseWithClaims(jwtToken, &claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(jwtSecret), nil
+	}); err != nil {
+		return CustomClaims{}, fmt.Errorf("could not parse jwt")
+	}
+
+	return claims, nil
+}

@@ -30,9 +30,9 @@ func (sis SigninService) Login(ctx context.Context, email, password string) (str
 		return "", fmt.Errorf("wrong password")
 	}
 
-	expire := time.Now().Add(time.Hour * 2)
+	expire := time.Now().UTC().Add(time.Hour * 2)
 	token, err := jwt.New(jwt.CustomClaims{
-		ExpiresAt: expire.UnixMilli(),
+		ExpiresAt: expire.Unix(),
 		Claims: map[string]interface{}{
 			"id":    user.ID,
 			"email": email,

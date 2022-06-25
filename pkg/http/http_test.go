@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	stdHttp "net/http"
+	"os"
 	"sync"
 	"testing"
 	"time"
@@ -15,6 +16,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestMain(m *testing.M) {
+	gin.SetMode(gin.ReleaseMode)
+	exit := m.Run()
+	gin.SetMode(gin.DebugMode)
+
+	os.Exit(exit)
+}
 
 func TestItShouldBeAbleToServeHTTPServer(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())

@@ -12,13 +12,13 @@ import (
 )
 
 func TestClaimsShouldNotBeValidIfExpiredAtIsAlreadyPast(t *testing.T) {
-	claims := jwt.CustomClaims{ExpiresAt: time.Now().Add(-time.Hour).UnixMilli()}
+	claims := jwt.CustomClaims{ExpiresAt: time.Now().UTC().Add(-time.Hour).Unix()}
 	err := claims.Valid()
 	assert.Error(t, err)
 }
 
 func TestClaimsShouldBeValidIfExpiresAtIsInTheFuture(t *testing.T) {
-	claims := jwt.CustomClaims{ExpiresAt: time.Now().Add(time.Hour).UnixMilli()}
+	claims := jwt.CustomClaims{ExpiresAt: time.Now().UTC().Add(time.Hour).Unix()}
 	err := claims.Valid()
 	assert.NoError(t, err)
 }

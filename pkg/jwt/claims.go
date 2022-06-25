@@ -11,7 +11,7 @@ type CustomClaims struct {
 }
 
 func (cc CustomClaims) Valid() error {
-	if time.Now().UnixMilli() > cc.ExpiresAt {
+	if time.Now().UTC().Unix() > cc.ExpiresAt {
 		return fmt.Errorf("invalid expires at")
 	}
 
