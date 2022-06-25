@@ -65,3 +65,33 @@ func TestItShouldNotBeAbleToCreateTwoUsersWithTheSameEmail(t *testing.T) {
 	err = pgStore.CreateUser(context.Background(), user)
 	assert.Error(t, err)
 }
+
+func TestItShouldNotBeAbleToGetUserByEmailIfUserDoesNotExist(t *testing.T) {
+	db := getPgCnx()
+	defer teardown(db)
+	pgStore := store.NewPgStore(db)
+
+	user, err := pgStore.GetUserByEmail(context.Background(), "a@gmail.com")
+	assert.Empty(t, user)
+	assert.Error(t, err)
+}
+
+func TestItShouldBeAbleToGetUserByEmail(t *testing.T) {
+	db := getPgCnx()
+	defer teardown(db)
+	pgStore := store.NewPgStore(db)
+	userToInsert := model.User{
+		ID:        uuid.New(),
+		Email:     "a@gmail.com",
+		Password:  "test",
+		CreatedAt: time.Now(),
+	}
+
+	err := pgStore.CreateUser(context.Background(), userToInsert)
+	assert.NoError(t, err)
+
+	user, err := pgStore.GetUserByEmail(context.Background(), "a@gmail.com")
+	assert.NotEmpty(t, userToInsert)
+	assert.Equal(t, userToInsert.ID, user.ID)
+	assert.NoError(t, err)
+}

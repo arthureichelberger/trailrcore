@@ -32,3 +32,15 @@ func (ps PgStore) CreateUser(ctx context.Context, user model.User) error {
 
 	return nil
 }
+
+func (ps PgStore) GetUserByEmail(ctx context.Context, email string) (model.User, error) {
+	query := `SELECT id, email, password FROM "user" WHERE email = $1;`
+
+	var user model.User
+	if err := ps.db.GetContext(ctx, &user, query, email); err != nil {
+		log.Error().Err(err).Str("email", email).Msg("could not get user")
+		return model.User{}, fmt.Errorf("could not get user: %w", err)
+	}
+
+	return user, nil
+}

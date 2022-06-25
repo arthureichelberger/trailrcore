@@ -59,3 +59,7 @@ dbreset:
 	docker volume rm -f trailrcore_dbdata
 	docker compose up -d
 	sleep 2
+
+lint: ## Run the linter
+lint:
+	golangci-lint run --out-format=github-actions --timeout=2m

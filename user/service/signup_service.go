@@ -13,17 +13,17 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type SignInService struct {
+type SignupService struct {
 	userStore store.Store
 }
 
-func NewSignInService(userStore store.Store) SignInService {
-	return SignInService{
+func NewSignupService(userStore store.Store) SignupService {
+	return SignupService{
 		userStore: userStore,
 	}
 }
 
-func (sis SignInService) CreateUser(ctx context.Context, email, pwd, pwdConfirm string) (model.User, error) {
+func (sus SignupService) CreateUser(ctx context.Context, email, pwd, pwdConfirm string) (model.User, error) {
 	switch {
 	case email == "":
 		return model.User{}, exception.CouldNotValidateEmailError{}
@@ -44,7 +44,7 @@ func (sis SignInService) CreateUser(ctx context.Context, email, pwd, pwdConfirm 
 		CreatedAt: time.Now(),
 	}
 
-	if err := sis.userStore.CreateUser(ctx, user); err != nil {
+	if err := sus.userStore.CreateUser(ctx, user); err != nil {
 		log.Error().Err(err).Str("email", user.Email).Msg("could not create user")
 		return model.User{}, fmt.Errorf("could not create user")
 	}

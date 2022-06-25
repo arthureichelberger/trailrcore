@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CreateUserHandler(signInService service.SignInService) gin.HandlerFunc {
+func CreateUserHandler(signupService service.SignupService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req request.CreateUserRequest
 		if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -18,7 +18,7 @@ func CreateUserHandler(signInService service.SignInService) gin.HandlerFunc {
 			return
 		}
 
-		user, err := signInService.CreateUser(ctx.Request.Context(), req.Email, req.Password, req.PasswordConfirmation)
+		user, err := signupService.CreateUser(ctx.Request.Context(), req.Email, req.Password, req.PasswordConfirmation)
 		if err != nil {
 			switch {
 			case errors.As(err, new(exception.CouldNotValidateEmailError)), errors.As(err, new(exception.CouldNotValidatePasswordError)):

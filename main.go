@@ -72,8 +72,9 @@ func main() {
 
 func initRouters(_ context.Context, engine *gin.RouterGroup, db *sqlx.DB) {
 	userStore := store.NewPgStore(db)
-	signInService := service.NewSignInService(userStore)
+	signupService := service.NewSignupService(userStore)
+	signinService := service.NewSigninService(userStore)
 
-	userRouter := transport.NewUserRouter(signInService)
+	userRouter := transport.NewUserRouter(signupService, signinService)
 	userRouter.InitRouter(engine)
 }
